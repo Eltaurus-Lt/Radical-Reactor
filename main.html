@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta property="og:title" content="Radical Reactor" />
+  <meta property="og:description" content="Fun and interactive way to study kanji composition" />
+  <meta property="og:image" content="todo" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="app" />
+
+  <title>Radical Reactor</title> 
+  <meta name="author" content="Eltaurus">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" type="image/svg+xml" href="">
+
+
+  <style>
+
+  card, group,
+  drawer, sidepanel, board {
+    display: block;
+    border: 2px slategray solid;
+  }
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  body {
+    display: grid;
+    grid-template-columns: 16rem 1fr;
+    grid-template-rows: 12rem 1fr;
+
+    font-family: sans-serif;
+  }
+
+  drawer {
+    display: flex;
+    padding: 1rem 2rem;
+    gap: 1rem;
+  }
+  drawer card {
+    position: relative;
+  }
+
+  sidepanel {
+    grid-row: 1 / span 2;
+
+    display: grid;
+    align-items: start;
+    align-content: start;
+  }
+
+  sidepanel span {
+    padding: .5em;
+    padding-left: 2em;
+    border: 1px solid gray;
+
+    font-size: 1.25rem;
+  }
+
+
+  board {
+    position: relative;
+    border-color: forestgreen;
+    background: beige;
+
+    // cursor: move;
+  }
+
+
+  card {
+    width: 5rem;
+    height: 7rem;
+    position: absolute;
+
+    font-size: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    --offset: 1px;
+
+    background: white;
+    border-width: 1px;
+    border-radius: 4px;
+
+    translate: calc(-1 * var(--offset)) calc(-1 * var(--offset));
+    box-shadow: 1px 1px 0 #eee,
+                2px 3px 0 #eee,
+                3px 4px 0 #eee,
+                4px 5px 0 slategray,
+                calc(3px + var(--offset)) calc(3px + var(--offset)) 3px #0007,
+                calc(7px + var(--offset)) calc(7px + var(--offset)) 9px #0005;
+
+    cursor: grab;
+  }
+
+  card::after {
+    content: '';
+    display: block;
+    position: absolute;
+    inset: 0;
+
+    //box-shadow: 4px 4px 5px #0005;
+  }
+
+  group {
+    border-color: blue;
+    position: absolute;
+
+    height: min-content;
+    width: min-content;
+  }
+ 
+  </style>
+</head>
+<body lang="ja">
+  <sidepanel lang="en-US">
+    <span>one</span>
+    <span>two</span>
+    <span>three</span>
+    <span>person</span>
+    <span>power</span>
+    <span>tree</span>
+
+  </sidepanel>
+  <drawer><card>一</card><card>人</card><card>木</card></drawer>
+  <board>
+    <card style="left: 4rem; top: 5rem;">一</card>
+    <card style="left: 35rem; top: 20rem;">六</card>
+
+    <group style="left: 20rem; top: 10rem;">
+      <card style="left: 1rem; top: 2rem;">一</card>
+      <card style="left: 4rem; top: 3rem;">一</card>
+    </group>
+
+  </board>
+ 
+</body>
+</html>

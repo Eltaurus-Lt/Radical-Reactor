@@ -21,9 +21,8 @@
   <style>
 
   card, group,
-  drawer, sidepanel, board {
+  drawer, sidepanel, board, null {
     display: block;
-    border: 2px slategray solid;
   }
 
   html, body {
@@ -47,8 +46,10 @@
 
   drawer {
     display: flex;
-    padding: 1rem 2rem;
+    padding: 3rem 2rem;
     gap: 1rem;
+
+    background: brown;
   }
   drawer card {
     position: relative;
@@ -60,6 +61,10 @@
     display: grid;
     align-items: start;
     align-content: start;
+    gap: 0.5em;
+
+    padding: 2em 1em;
+    border-right: .5rem solid slategray;
   }
 
   sidepanel span {
@@ -74,11 +79,26 @@
   board {
     position: relative;
     border-color: forestgreen;
-    background: beige;
 
-    // cursor: move;
+    background: beige;
+    overflow: hidden;
+  }
+  board.panning {
+    cursor: move;
   }
 
+  null {
+    position: absolute;
+    
+    outline: solid 4px yellowgreen;
+    outline-offset: 3px;
+  }
+
+  @property --offset {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0;
+  }
 
   card {
     width: 5rem;
@@ -91,13 +111,11 @@
     align-items: center;
     justify-content: center;
 
-    --offset: 1px;
-
     background: white;
-    border-width: 1px;
+    border: slategray solid 1px;
     border-radius: 4px;
 
-    translate: calc(-1 * var(--offset)) calc(-1 * var(--offset));
+    transform: translate(calc(-1 * var(--offset)), calc(-1 * var(--offset)));
     box-shadow: 1px 1px 0 #eee,
                 2px 3px 0 #eee,
                 3px 4px 0 #eee,
@@ -105,7 +123,19 @@
                 calc(3px + var(--offset)) calc(3px + var(--offset)) 3px #0007,
                 calc(7px + var(--offset)) calc(7px + var(--offset)) 9px #0005;
 
+    transition: --offset .12s ease,
+                box-shadow .12s ease;
     cursor: grab;
+  }
+  card.holded {
+    --offset: 15px;
+    cursor: grabbing;
+    box-shadow: 1px 1px 0 #eee,
+                2px 3px 0 #eee,
+                3px 4px 0 #eee,
+                4px 5px 0 slategray,
+                calc(3px + var(--offset)) calc(3px + var(--offset)) 20px #0003,
+                calc(7px + var(--offset)) calc(7px + var(--offset)) 35px #0001;
   }
 
   card::after {
@@ -117,12 +147,23 @@
     //box-shadow: 4px 4px 5px #0005;
   }
 
+  /* holded card */
+  board > card {
+    z-index: 10;
+  }
+  board > card:not(.holded) {
+    visibility: hidden;
+  }
+
   group {
     border-color: blue;
     position: absolute;
 
     height: min-content;
     width: min-content;
+
+    outline: blue 1px solid;
+    outline-offset: 5px;
   }
  
   </style>
@@ -139,15 +180,92 @@
   </sidepanel>
   <drawer><card>一</card><card>人</card><card>木</card></drawer>
   <board>
-    <card style="left: 4rem; top: 5rem;">一</card>
-    <card style="left: 35rem; top: 20rem;">六</card>
-
-    <group style="left: 20rem; top: 10rem;">
-      <card style="left: 1rem; top: 2rem;">一</card>
-      <card style="left: 4rem; top: 3rem;">一</card>
-    </group>
+    <card></card>
+    <null>
+    </null>
 
   </board>
  
+
+<script>
+
+
+
+const boardL = document.querySelector("board");
+const groundNull = document.querySelector("null");
+
+const holdedCard = document.querySelector("board > card");
+
+let [X0, Y0] = [0, 0];
+
+// testing setup
+spawnCard([80, 50], "一", false);
+spawnCard([220, 210], "一", false);
+spawnCard([420, 150], "六", false);
+spawnCard([280, 250], "一", false);
+
+function spawnCard(pos, innerHTML, animated = true) {
+  const newCard = document.createElement('card');
+  newCard.innerHTML = innerHTML;
+  newCard.style.left = `${pos[0]}px`;
+  newCard.style.top = `${pos[1]}px`;
+
+  groundNull.appendChild(newCard);
+
+  if (animated) {
+    newCard.classList.add("holded");
+    requestAnimationFrame(() => {
+      newCard.classList.remove("holded");
+    });
+  }
+}
+
+
+
+boardL.addEventListener('mousedown', ev => {
+  if (ev.target === boardL) {
+    boardL.classList.add("panning");
+    boardL.pan0 = [X0 - ev.clientX, Y0 - ev.clientY];
+  } else if (ev.target.tagName === "CARD") {
+    holdedCard.classList.add("holded");
+    holdedCard.innerHTML = ev.target.innerHTML;
+    holdedCard.start = [ev.clientX, ev.clientY];
+    holdedCard.style.translate = "0";
+    holdedCard.style.left = `${parseFloat(ev.target.style.left) + X0}px`;
+    holdedCard.style.top = `${parseFloat(ev.target.style.top) + Y0}px`;
+    ev.target.remove();
+  }
+});
+
+function releaseHold() {
+  boardL.classList.remove("panning");
+  if (holdedCard.classList.contains("holded")) {
+    holdedCard.classList.remove("holded");
+
+    const [dx, dy] = holdedCard.style.translate.split(' ').map(parseFloat);
+    const x0 = parseFloat(holdedCard.style.left);
+    const y0 = parseFloat(holdedCard.style.top);
+
+    spawnCard([x0 + (dx ?? 0) - X0, y0 + (dy ?? 0) - Y0], holdedCard.innerHTML);
+  }
+}
+document.addEventListener('mouseup', releaseHold);
+boardL.addEventListener('mouseleave', releaseHold);
+
+document.addEventListener('mousemove', ev => {
+  if ((ev.buttons & 1) !== 1) return;
+  const pos = [ev.clientX, ev.clientY];
+  if (holdedCard.classList.contains("holded")) {
+    const dx = pos[0] - holdedCard.start[0];
+    const dy = pos[1] - holdedCard.start[1];
+    holdedCard.style.translate = `${dx}px ${dy}px`;
+  } else if (boardL.classList.contains("panning")) {
+    X0 = pos[0] + boardL.pan0[0];
+    Y0 = pos[1] + boardL.pan0[1];
+    groundNull.style.translate = `${X0}px ${Y0}px`;
+  }
+});
+
+</script>
 </body>
 </html>

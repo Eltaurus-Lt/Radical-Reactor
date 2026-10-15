@@ -17,11 +17,26 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" type="image/svg+xml" href="">
 
+  <svg id="filters" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position: absolute;">
+    <filter id="sandF" color-interpolation-filters="sRGB">
+      <feImage 
+        id="noiseTile"
+        preserveAspectRatio="none"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"
+        width="200" 
+        height="200" 
+        result="rawGrain" 
+      />
+      <feTile in="rawGrain" x="0" y="0" width="100%" height="100%" result="tiledGrain" />
+      <feColorMatrix type="matrix" values=".55 0 0 0 .5  0 .9 0 0 .2  0 0 1 0 0  0 0 0 0.9 0" in="tiledGrain" result="fadedGrain" />
+      <feBlend in="SourceGraphic" in2="fadedGrain" mode="soft-light" />
+    </filter>
+  </svg>
 
   <style>
 
   card, group,
-  drawer, sidepanel, board, null {
+  drawer, sidepanel, board, null, BG {
     display: block;
   }
 
@@ -49,7 +64,7 @@
     padding: 3rem 2rem;
     gap: 1rem;
 
-    background: brown;
+    background: #92664a;
   }
   drawer card {
     position: relative;
@@ -80,7 +95,7 @@
     position: relative;
     border-color: forestgreen;
 
-    background: beige;
+    background: green;beige;
     overflow: hidden;
   }
   board.panning {
@@ -89,6 +104,7 @@
 
   null {
     position: absolute;
+    z-index: 100;
     
     outline: solid 4px yellowgreen;
     outline-offset: 3px;
@@ -149,7 +165,7 @@
 
   /* holded card */
   board > card {
-    z-index: 10;
+    z-index: 200;
   }
   board > card:not(.holded) {
     visibility: hidden;
@@ -164,6 +180,15 @@
 
     outline: blue 1px solid;
     outline-offset: 5px;
+  }
+
+  BG {
+    width: 100%;
+    height: 100%;
+    background: beige;#eee2;
+    filter: url(#sandF);
+    z-index: -100;
+    overflow: visible;
   }
  
   </style>
@@ -183,7 +208,7 @@
     <card></card>
     <null>
     </null>
-
+    <BG></BG>
   </board>
  
 
@@ -193,6 +218,7 @@
 
 const boardL = document.querySelector("board");
 const groundNull = document.querySelector("null");
+const sandF = document.getElementById("noiseTile");
 
 const holdedCard = document.querySelector("board > card");
 
@@ -223,10 +249,7 @@ function spawnCard(pos, innerHTML, animated = true) {
 
 
 boardL.addEventListener('mousedown', ev => {
-  if (ev.target === boardL) {
-    boardL.classList.add("panning");
-    boardL.pan0 = [X0 - ev.clientX, Y0 - ev.clientY];
-  } else if (ev.target.tagName === "CARD") {
+ if (ev.target.tagName === "CARD") {
     holdedCard.classList.add("holded");
     holdedCard.innerHTML = ev.target.innerHTML;
     holdedCard.start = [ev.clientX, ev.clientY];
@@ -234,6 +257,10 @@ boardL.addEventListener('mousedown', ev => {
     holdedCard.style.left = `${parseFloat(ev.target.style.left) + X0}px`;
     holdedCard.style.top = `${parseFloat(ev.target.style.top) + Y0}px`;
     ev.target.remove();
+  } else {
+//  if (ev.target === boardL) {
+    boardL.classList.add("panning");
+    boardL.pan0 = [X0 - ev.clientX, Y0 - ev.clientY];
   }
 });
 
@@ -263,6 +290,8 @@ document.addEventListener('mousemove', ev => {
     X0 = pos[0] + boardL.pan0[0];
     Y0 = pos[1] + boardL.pan0[1];
     groundNull.style.translate = `${X0}px ${Y0}px`;
+    sandF.setAttribute("x", `${(X0 % 200 + 200) % 200}`); 
+    sandF.setAttribute("y", `${(Y0 % 200 + 200) % 200}`); 
   }
 });
 

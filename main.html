@@ -35,7 +35,7 @@
 
   <style>
 
-  card, group,
+  card, print, group, layer,
   drawer, sidepanel, board, null, BG {
     display: block;
   }
@@ -57,6 +57,7 @@
     grid-template-rows: 12rem 1fr;
 
     font-family: sans-serif;
+    overflow: hidden;
   }
 
   drawer {
@@ -100,6 +101,16 @@
   }
   board.panning {
     cursor: move;
+  }
+
+  BG {
+    width: 100%;
+    height: 100%;
+    z-index: -100;
+
+    background: #808080;beige;#eee2;
+
+    filter: url(#sandF);
   }
 
   null {
@@ -164,11 +175,27 @@
   }
 
   /* holded card */
-  board > card {
+  body > card {
     z-index: 200;
   }
-  board > card:not(.holded) {
+  body > card:not(.holded) {
     visibility: hidden;
+  }
+
+  print {
+    width: 5rem;
+    height: 7rem;
+    position: absolute;
+
+    background: black;
+    border: white solid 9px;
+    border-radius: calc(4px + 9px);
+
+    opacity: 0;
+    transition: opacity 0.04s ease .08s;
+  }
+  print.printed {
+    opacity: 1;
   }
 
   group {
@@ -181,19 +208,11 @@
     outline: blue 1px solid;
     outline-offset: 5px;
   }
-
-  BG {
-    width: 100%;
-    height: 100%;
-    background: beige;#eee2;
-    filter: url(#sandF);
-    z-index: -100;
-    overflow: visible;
-  }
  
   </style>
 </head>
 <body lang="ja">
+  <card></card>
   <sidepanel lang="en-US">
     <span>one</span>
     <span>two</span>
@@ -203,62 +222,74 @@
     <span>tree</span>
 
   </sidepanel>
-  <drawer><card>一</card><card>人</card><card>木</card></drawer>
+  <drawer><card>一</card><card>人</card><card>木</card><card>六</card></drawer>
   <board>
-    <card></card>
     <null>
+      <layer id="cardsLayer"></layer>
+      <layer id="decorationsLayer"></layer>
     </null>
-    <BG></BG>
+    <BG>
+      <null>
+      </null>
+    </BG>
   </board>
- 
 
 <script>
 
-
-
+const drawerL = document.querySelector("drawer");
 const boardL = document.querySelector("board");
-const groundNull = document.querySelector("null");
+const nulls = document.querySelectorAll("null");
+const groundLayer = document.getElementById("cardsLayer");
 const sandF = document.getElementById("noiseTile");
 
-const holdedCard = document.querySelector("board > card");
+const holdedCard = document.querySelector("body > card");
 
 let [X0, Y0] = [0, 0];
 
-// testing setup
-spawnCard([80, 50], "一", false);
-spawnCard([220, 210], "一", false);
-spawnCard([420, 150], "六", false);
-spawnCard([280, 250], "一", false);
 
 function spawnCard(pos, innerHTML, animated = true) {
   const newCard = document.createElement('card');
   newCard.innerHTML = innerHTML;
-  newCard.style.left = `${pos[0]}px`;
-  newCard.style.top = `${pos[1]}px`;
+  newCard.style.left = `${pos[0] - X0}px`;
+  newCard.style.top = `${pos[1] - Y0}px`;
 
-  groundNull.appendChild(newCard);
+  groundLayer.appendChild(newCard);
+
+  const cardPrint = document.createElement('print');
+  cardPrint.style.left = `${pos[0] - X0}px`;
+  cardPrint.style.top = `${pos[1] - Y0}px`;
+
+　nulls[1].appendChild(cardPrint);
 
   if (animated) {
     newCard.classList.add("holded");
     requestAnimationFrame(() => {
       newCard.classList.remove("holded");
+      cardPrint.classList.add("printed");
     });
   }
 }
 
 
 
-boardL.addEventListener('mousedown', ev => {
+document.addEventListener('mousedown', ev => {
  if (ev.target.tagName === "CARD") {
     holdedCard.classList.add("holded");
     holdedCard.innerHTML = ev.target.innerHTML;
     holdedCard.start = [ev.clientX, ev.clientY];
     holdedCard.style.translate = "0";
-    holdedCard.style.left = `${parseFloat(ev.target.style.left) + X0}px`;
-    holdedCard.style.top = `${parseFloat(ev.target.style.top) + Y0}px`;
-    ev.target.remove();
-  } else {
-//  if (ev.target === boardL) {
+
+    if (ev.target.closest("board")) {
+      const boardRect = boardL.getBoundingClientRect();
+      holdedCard.style.left = `${parseFloat(ev.target.style.left) + X0 + boardRect.x}px`;
+      holdedCard.style.top = `${parseFloat(ev.target.style.top) + Y0 + boardRect.y}px`;
+      ev.target.remove();
+    } else if (ev.target.closest("drawer")) {
+      const cardRect = ev.target.getBoundingClientRect();
+      holdedCard.style.left = `${cardRect.x}px`;
+      holdedCard.style.top = `${cardRect.y}px`;
+    }
+  } else if (ev.target.closest("board")) {
     boardL.classList.add("panning");
     boardL.pan0 = [X0 - ev.clientX, Y0 - ev.clientY];
   }
@@ -272,12 +303,13 @@ function releaseHold() {
     const [dx, dy] = holdedCard.style.translate.split(' ').map(parseFloat);
     const x0 = parseFloat(holdedCard.style.left);
     const y0 = parseFloat(holdedCard.style.top);
+    const boardRect = boardL.getBoundingClientRect();
 
-    spawnCard([x0 + (dx ?? 0) - X0, y0 + (dy ?? 0) - Y0], holdedCard.innerHTML);
+    spawnCard([x0 + (dx ?? 0) - boardRect.x, y0 + (dy ?? 0) - boardRect.y], holdedCard.innerHTML);
   }
 }
 document.addEventListener('mouseup', releaseHold);
-boardL.addEventListener('mouseleave', releaseHold);
+document.body.addEventListener('mouseleave', releaseHold);
 
 document.addEventListener('mousemove', ev => {
   if ((ev.buttons & 1) !== 1) return;
@@ -289,7 +321,7 @@ document.addEventListener('mousemove', ev => {
   } else if (boardL.classList.contains("panning")) {
     X0 = pos[0] + boardL.pan0[0];
     Y0 = pos[1] + boardL.pan0[1];
-    groundNull.style.translate = `${X0}px ${Y0}px`;
+    [...nulls].forEach(nullL => nullL.style.translate = `${X0}px ${Y0}px`);
     sandF.setAttribute("x", `${(X0 % 200 + 200) % 200}`); 
     sandF.setAttribute("y", `${(Y0 % 200 + 200) % 200}`); 
   }

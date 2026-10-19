@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <title>Radical Reactor</title> 
+  <meta name="author" content="Eltaurus">
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -11,11 +14,10 @@
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="app" />
 
-  <title>Radical Reactor</title> 
-  <meta name="author" content="Eltaurus">
-
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" type="image/svg+xml" href="">
+
+  <script src="clusters.js"></script>
 
   <svg id="filters" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position: absolute;">
     <filter id="sandF" color-interpolation-filters="sRGB">
@@ -165,6 +167,35 @@
                 calc(7px + var(--offset)) calc(7px + var(--offset)) 35px #0001;
   }
 
+  card[cluster] {
+    background-color: color-mix(in srgb, white 80%, var(--cluster-col));
+  }
+  card[cluster="0"]  { --cluster-col: red; }
+  card[cluster="1"]  { --cluster-col: lime; }
+  card[cluster="2"]  { --cluster-col: blue; }
+  card[cluster="3"]  { --cluster-col: yellow; }
+  card[cluster="4"]  { --cluster-col: cyan; }
+  card[cluster="5"]  { --cluster-col: magenta; }
+  card[cluster="6"]  { --cluster-col: orange; }
+  card[cluster="7"]  { --cluster-col: purple; }
+  card[cluster="8"]  { --cluster-col: teal; }
+  card[cluster="9"]  { --cluster-col: brown; }
+  card[cluster="10"] { --cluster-col: pink; }
+  card[cluster="11"] { --cluster-col: gold; }
+  card[cluster="12"] { --cluster-col: olive; }
+  card[cluster="13"] { --cluster-col: navy; }
+  card[cluster="14"] { --cluster-col: maroon; }
+  card[cluster="15"] { --cluster-col: turquoise; }
+  card[cluster="16"] { --cluster-col: coral; }
+  card[cluster="17"] { --cluster-col: indigo; }
+  card[cluster="18"] { --cluster-col: crimson; }
+  card[cluster="19"] { --cluster-col: chartreuse; }
+  card[cluster="20"] { --cluster-col: darkviolet; }
+  card[cluster="21"] { --cluster-col: deepskyblue; }
+  card[cluster="22"] { --cluster-col: orangered; }
+  card[cluster="23"] { --cluster-col: mediumspringgreen; }
+  card[cluster="24"] { --cluster-col: hotpink; }
+
   card::after {
     content: '';
     display: block;
@@ -246,6 +277,9 @@ const holdedCard = document.querySelector("body > card");
 
 let [X0, Y0] = [0, 0];
 
+const cardStyle = window.getComputedStyle(holdedCard);
+//import { Clusters } from './clusters.js';
+const clusters = new Clusters([ cardStyle.width, cardStyle.height ]);
 
 function spawnCard(pos, innerHTML, animated = true) {
   const newCard = document.createElement('card');
@@ -254,6 +288,8 @@ function spawnCard(pos, innerHTML, animated = true) {
   newCard.style.top = `${pos[1] - Y0}px`;
 
   groundLayer.appendChild(newCard);
+  clusters.place(newCard);
+  clusters.color();
 
   const cardPrint = document.createElement('print');
   cardPrint.style.left = `${pos[0] - X0}px`;
@@ -283,7 +319,9 @@ document.addEventListener('mousedown', ev => {
       const boardRect = boardL.getBoundingClientRect();
       holdedCard.style.left = `${parseFloat(ev.target.style.left) + X0 + boardRect.x}px`;
       holdedCard.style.top = `${parseFloat(ev.target.style.top) + Y0 + boardRect.y}px`;
+      clusters.remove(ev.target);
       ev.target.remove();
+      clusters.color();
     } else if (ev.target.closest("drawer")) {
       const cardRect = ev.target.getBoundingClientRect();
       holdedCard.style.left = `${cardRect.x}px`;

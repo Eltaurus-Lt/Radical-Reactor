@@ -17,8 +17,6 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" type="image/svg+xml" href="">
 
-  <script src="clusters.js"></script>
-
   <svg id="filters" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position: absolute;">
     <filter id="sandF" color-interpolation-filters="sRGB">
       <feImage 
@@ -36,6 +34,11 @@
   </svg>
 
   <style>
+  
+  :root {
+    --brim-col: yellowgreen;#7ED957;#6CC644;#5DBB63;#4CAF50;#6CC644;
+    --brim-outline: forestgreen;
+  }
 
   card, print, group, layer,
   drawer, sidepanel, board, null, BG {
@@ -87,10 +90,13 @@
 
   sidepanel span {
     padding: .5em;
-    padding-left: 2em;
+    padding-left: 1em;
     border: 1px solid gray;
 
     font-size: 1.25rem;
+  }
+  sidepanel span::before {
+    content: attr(kanji) "\00A0\00A0";
   }
 
 
@@ -145,26 +151,44 @@
     border-radius: 4px;
 
     transform: translate(calc(-1 * var(--offset)), calc(-1 * var(--offset)));
-    box-shadow: 1px 1px 0 #eee,
-                2px 3px 0 #eee,
-                3px 4px 0 #eee,
-                4px 5px 0 slategray,
+    box-shadow: 1px 1px 0 var(--brim-col),
+                2px 3px 0 var(--brim-col),
+                3px 4px 0 var(--brim-col),
+                4px 5px 0 var(--brim-outline),
                 calc(3px + var(--offset)) calc(3px + var(--offset)) 3px #0007,
                 calc(7px + var(--offset)) calc(7px + var(--offset)) 9px #0005;
 
-    transition: --offset .12s ease,
-                box-shadow .12s ease;
+    --lifting-dur: .12s;
+    transition: --offset var(--lifting-dur) ease,
+                box-shadow var(--lifting-dur) ease;
     cursor: grab;
   }
   card.holded {
     --offset: 15px;
     cursor: grabbing;
-    box-shadow: 1px 1px 0 #eee,
-                2px 3px 0 #eee,
-                3px 4px 0 #eee,
-                4px 5px 0 slategray,
+    box-shadow: 1px 1px 0 var(--brim-col),
+                2px 3px 0 var(--brim-col),
+                3px 4px 0 var(--brim-col),
+                4px 5px 0 var(--brim-outline),
                 calc(3px + var(--offset)) calc(3px + var(--offset)) 20px #0003,
                 calc(7px + var(--offset)) calc(7px + var(--offset)) 35px #0001;
+  }
+
+  card.merging {
+    --offset: 15px;
+    --lifting-dur: .7s;
+    animation: mergeAnimation 1s ease-in forwards;
+    box-shadow: 1px 1px 0 var(--brim-col),
+                2px 3px 0 var(--brim-col),
+                3px 4px 0 var(--brim-col),
+                4px 5px 0 var(--brim-outline),
+                calc(3px + var(--offset)) calc(3px + var(--offset)) 20px #0003,
+                calc(7px + var(--offset)) calc(7px + var(--offset)) 35px #0001;
+  }
+  @keyframes mergeAnimation {
+    to {
+      translate: var(--offsetX) var(--offsetY);
+    }
   }
 
   card[cluster] {
@@ -245,15 +269,23 @@
 <body lang="ja">
   <card></card>
   <sidepanel lang="en-US">
-    <span>one</span>
-    <span>two</span>
-    <span>three</span>
-    <span>person</span>
-    <span>power</span>
-    <span>tree</span>
+    <span kanji="二">two</span>
+    <span kanji="三">three</span>
+    <span kanji="十">ten</span>
+    <span kanji="大">big</span>
+    <span kanji="古">old</span>
+    <span kanji="品">goods</span>
+    <span kanji="仁">humanity</span>
+    <span kanji="体">body</span>
+    <span kanji="休">rest</span>
+    <span kanji="木">tree</span>
+    <span kanji="犬">dog</span>
+    <span kanji="本">book</span>
+    <span kanji="林">grove</span>
+    <span kanji="森">forest</span>
 
   </sidepanel>
-  <drawer><card>一</card><card>人</card><card>木</card><card>六</card></drawer>
+  <drawer><card>一</card><card>｜</card><card>丶</card><card>口</card><card>人</card></drawer>
   <board>
     <null>
       <layer id="cardsLayer"></layer>
@@ -265,7 +297,55 @@
     </BG>
   </board>
 
-<script>
+<script type="module">
+
+// loading data assets
+const reactions = await fetch('reactions.json').then(r=>r.json());
+
+// reactions.js
+function unwrap(radical) {
+  return;
+}
+function reactionLookup(cluster) {
+  if (cluster.size > 5) return;
+  const clusterSequence = [...cluster].map(card=>card.innerHTML).sort();
+
+  const react = clusterSequence.reduce((r, radical) => r?.[radical], reactions);
+  if (!react) {
+    return;
+  } else if (typeof react === "string") {
+    mergeAnimation(cluster, react);
+    clusters.delete(cluster);
+  } else if (Array.isArray(react)) {
+    // todo: non-unique reactions
+  } else {
+    console.log(react);
+  }
+}
+
+// animations
+function mergeAnimation(cluster, result) {
+  const barycenter = [0, 0];
+  for (const card of cluster) {
+    barycenter[0] += parseFloat(card.style.left);
+    barycenter[1] += parseFloat(card.style.top);
+  }
+  barycenter[0] = Math.round(barycenter[0] / cluster.size);
+  barycenter[1] = Math.round(barycenter[1] / cluster.size);
+  
+  for (const [i, card] of [...cluster].entries()) {
+    card.classList.add("animated");
+    card.style.setProperty("--offsetX", `${barycenter[0] - parseFloat(card.style.left)}px`);
+    card.style.setProperty("--offsetY", `${barycenter[1] - parseFloat(card.style.top)}px`);
+    card.addEventListener('animationend', () => {
+      if (i === 0) {
+        spawnCard(barycenter, result);
+      }
+      card.remove();
+    });
+    card.classList.add("merging");
+  }
+}
 
 const drawerL = document.querySelector("drawer");
 const boardL = document.querySelector("board");
@@ -278,22 +358,22 @@ const holdedCard = document.querySelector("body > card");
 let [X0, Y0] = [0, 0];
 
 const cardStyle = window.getComputedStyle(holdedCard);
-//import { Clusters } from './clusters.js';
+const { Clusters } = await import(`./clusters.js?v=${Date.now()}`);
 const clusters = new Clusters([ cardStyle.width, cardStyle.height ]);
 
 function spawnCard(pos, innerHTML, animated = true) {
   const newCard = document.createElement('card');
   newCard.innerHTML = innerHTML;
-  newCard.style.left = `${pos[0] - X0}px`;
-  newCard.style.top = `${pos[1] - Y0}px`;
+  newCard.style.left = `${pos[0]}px`;
+  newCard.style.top = `${pos[1]}px`;
 
   groundLayer.appendChild(newCard);
-  clusters.place(newCard);
+  clusters.place(newCard).map(reactionLookup);
   clusters.color();
 
   const cardPrint = document.createElement('print');
-  cardPrint.style.left = `${pos[0] - X0}px`;
-  cardPrint.style.top = `${pos[1] - Y0}px`;
+  cardPrint.style.left = `${pos[0]}px`;
+  cardPrint.style.top = `${pos[1]}px`;
 
 　nulls[1].appendChild(cardPrint);
 
@@ -310,6 +390,7 @@ function spawnCard(pos, innerHTML, animated = true) {
 
 document.addEventListener('mousedown', ev => {
  if (ev.target.tagName === "CARD") {
+    if (ev.target.classList.contains("animated")) return;
     holdedCard.classList.add("holded");
     holdedCard.innerHTML = ev.target.innerHTML;
     holdedCard.start = [ev.clientX, ev.clientY];
@@ -319,7 +400,7 @@ document.addEventListener('mousedown', ev => {
       const boardRect = boardL.getBoundingClientRect();
       holdedCard.style.left = `${parseFloat(ev.target.style.left) + X0 + boardRect.x}px`;
       holdedCard.style.top = `${parseFloat(ev.target.style.top) + Y0 + boardRect.y}px`;
-      clusters.remove(ev.target);
+      clusters.remove(ev.target).map(reactionLookup);
       ev.target.remove();
       clusters.color();
     } else if (ev.target.closest("drawer")) {
@@ -343,7 +424,7 @@ function releaseHold() {
     const y0 = parseFloat(holdedCard.style.top);
     const boardRect = boardL.getBoundingClientRect();
 
-    spawnCard([x0 + (dx ?? 0) - boardRect.x, y0 + (dy ?? 0) - boardRect.y], holdedCard.innerHTML);
+    spawnCard([x0 + (dx ?? 0) - boardRect.x - X0, y0 + (dy ?? 0) - boardRect.y - Y0], holdedCard.innerHTML);
   }
 }
 document.addEventListener('mouseup', releaseHold);

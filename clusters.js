@@ -17,7 +17,7 @@
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 
-class Clusters {
+export class Clusters {
     constructor(dimensions) {
         this.cellSize = dimensions.map(dim => parseInt(dim));
         this.grid = new Map();
@@ -101,21 +101,11 @@ class Clusters {
     }
 
     remove(cardL) {
-        const [x, y] = this._coordinates(cardL);
-        const [X, Y] = this._cell([x, y]);
-        const hash = this._coordHash([X, Y]);
-
-        // Remove from the grid
-        const cell = this.grid.get(hash);
-        if (cell) {
-            this._removeFromCell(cell, cardL);
-            if (cell.length === 0) this.grid.delete(hash);
-        }
+        this._removeFromCell(cardL);
 
         // Delete the whole cluster (remains reinserted as new clusters later)
         const originalCluster = cardL.cluster;
         if (originalCluster) {
-            originalCluster.delete(cardL);
             this.clusterSet.delete(originalCluster);
         }
 
@@ -156,6 +146,16 @@ class Clusters {
         return Array.from(affectedClusters);
     }
 
+    delete(cluster) { // skips graph recalculation and therefore more efficient than removing cards one by one
+        for (const cardL of cluster) {
+            // remove cards from the grid
+            this._removeFromCell(cardL);
+        }
+        // delete the cluster record
+        this.clusterSet.delete(cluster)
+        return;
+    }
+
     clusters() {
         return Array.from(this.clusterSet);
     }
@@ -164,6 +164,7 @@ class Clusters {
         const board = document.querySelector("board");
         const cardSet = new Set(board.querySelectorAll("card"));
         const clusterSet = this.clusters();
+        window.clusters = clusterSet;
         for (let i = 0; i < clusterSet.length; i++) {
             const cluster = clusterSet[i];
             for (const card of cluster) {
@@ -184,10 +185,18 @@ class Clusters {
         cell.push({ card, x, y });
     }
 
-    _removeFromCell(cell, card) {
-        const index = cell.findIndex(item => item.card === card);
-        if (index !== -1) {
-            cell.splice(index, 1);
+    _removeFromCell(cardL) {
+        const [x, y] = this._coordinates(cardL);
+        const [X, Y] = this._cell([x, y]);
+        const hash = this._coordHash([X, Y]);
+
+        const cell = this.grid.get(hash);
+        if (cell) {
+            const index = cell.findIndex(item => item.card === cardL);
+            if (index !== -1) {
+                cell.splice(index, 1);
+            }
+            if (cell.length === 0) this.grid.delete(hash);
         }
     }
 
@@ -205,56 +214,4 @@ class Clusters {
         }
         return results;
     }
-
-    // // 3.B Cell subtrees (hash collisions)
-    // _insertIntoGrid(cell, el, x, y) {
-    //     const index = cell.findIndex(item => parseFloat(item.style.left || 0) > x);
-    //     const entry = { el, x, y, lowY: y, highY: y + this.S };
-    //     if (index === -1) cell.push(entry);
-    //     else cell.splice(index, 0, entry);
-    //     this._updateIntervalTreeValues(cell);
-    // }
-
-    // _removeFromCell(cell, el) {
-    //     const index = cell.findIndex(item => item.el === el);
-    //     if (index !== -1) {
-    //         cell.splice(index, 1);
-    //         this._updateIntervalTreeValues(cell);
-    //     }
-    // }
-
-    // _updateIntervalTreeValues(cell) {
-    //     for (let i = cell.length - 1; i >= 0; i--) {
-    //         let max = cell[i].highY;
-    //         if (2 * i + 1 < cell.length) max = Math.max(max, cell[2 * i + 1].maxSubY);
-    //         if (2 * i + 2 < cell.length) max = Math.max(max, cell[2 * i + 2].maxSubY);
-    //         cell[i].maxSubY = max;
-    //     }
-    // }
-
-    // _overlappingFromHash(hash, [qx, qy]) {
-    //     const cell = this.grid.get(hash);
-    //     const results = [];
-    //     if (!cell || cell.length === 0) return results;
-
-    //     const S = this.S;
-    //     const stack = [0];
-
-    //     while (stack.length > 0) {
-    //         const idx = stack.pop();
-    //         if (idx >= cell.length) continue;
-
-    //         const node = cell[idx];
-    //         if (qy + S <= node.lowY || qy >= node.maxSubY) continue;
-
-    //         if (Math.abs(node.x - qx) < S && Math.abs(node.y - qy) < S) {
-    //             results.push(node.el);
-    //         }
-
-    //         if (2 * idx + 1 < cell.length && qy < cell[2 * idx + 1].maxSubY) stack.push(2 * idx + 1);
-    //         if (2 * idx + 2 < cell.length && node.x - S < cell[2 * idx + 2].x) stack.push(2 * idx + 2);
-    //     }
-    //     return results;
-    // }
-
 }

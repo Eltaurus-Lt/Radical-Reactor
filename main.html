@@ -86,6 +86,8 @@
 
     padding: 2em 1em;
     border-right: .5rem solid slategray;
+
+    overflow-y: auto;
   }
 
   sidepanel span {
@@ -177,6 +179,7 @@
   card.merging {
     --offset: 15px;
     --lifting-dur: .7s;
+    z-index: 150;
     animation: mergeAnimation 1s ease-in forwards;
     box-shadow: 1px 1px 0 var(--brim-col),
                 2px 3px 0 var(--brim-col),
@@ -268,7 +271,7 @@
 </head>
 <body lang="ja">
   <card></card>
-  <sidepanel lang="en-US">
+  <sidepanel>
     <span kanji="二">two</span>
     <span kanji="三">three</span>
     <span kanji="十">ten</span>
@@ -276,11 +279,11 @@
     <span kanji="古">old</span>
     <span kanji="品">goods</span>
     <span kanji="仁">humanity</span>
-    <span kanji="体">body</span>
-    <span kanji="休">rest</span>
     <span kanji="木">tree</span>
     <span kanji="犬">dog</span>
     <span kanji="本">book</span>
+    <span kanji="休">rest</span>
+    <span kanji="体">body</span>
     <span kanji="林">grove</span>
     <span kanji="森">forest</span>
 

@@ -40,6 +40,7 @@
     --brim-outline: forestgreen;
   }
 
+  kanjilist, search,
   card, print, group, layer,
   drawer, sidepanel, board, null, BG {
     display: block;
@@ -79,32 +80,61 @@
   sidepanel {
     grid-row: 1 / span 2;
 
+    padding: 2em 1em;
+    border-right: .5rem solid slategray;
+    height: 100%;
+  }
+
+  kanjilist {
     display: grid;
     align-items: start;
     align-content: start;
     gap: 0.5em;
 
-    padding: 2em 1em;
-    border-right: .5rem solid slategray;
-
     overflow-y: auto;
   }
 
-  sidepanel span {
+  kanjilist span {
     padding: .5em;
     padding-left: 1em;
     border: 1px solid gray;
 
     font-size: 1.25rem;
   }
-  sidepanel span::before {
+  kanjilist span::before {
     content: attr(kanji) "\00A0\00A0";
   }
 
+  kanjilist span.done {
+    border-color: forestgreen;
+    background-color: lightgreen;
+  }
+
+  search {
+    position: relative;
+    margin-top: 1em;
+    width: 100%;
+    height: min-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  search input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  search #search-btn {
+    position: absolute;
+    right: 0;
+    width: 1em;
+    height: 1em;
+    background: slategray;
+  }
 
   board {
     position: relative;
-    border-color: forestgreen;
 
     background: green;beige;
     overflow: hidden;
@@ -126,9 +156,6 @@
   null {
     position: absolute;
     z-index: 100;
-    
-    outline: solid 4px yellowgreen;
-    outline-offset: 3px;
   }
 
   @property --offset {
@@ -178,9 +205,9 @@
 
   card.merging {
     --offset: 15px;
-    --lifting-dur: .7s;
+    --lifting-dur: .2s;
     z-index: 150;
-    animation: mergeAnimation 1s ease-in forwards;
+    animation: mergeAnimation .3s ease forwards;
     box-shadow: 1px 1px 0 var(--brim-col),
                 2px 3px 0 var(--brim-col),
                 3px 4px 0 var(--brim-col),
@@ -272,21 +299,12 @@
 <body lang="ja">
   <card></card>
   <sidepanel>
-    <span kanji="二">two</span>
-    <span kanji="三">three</span>
-    <span kanji="十">ten</span>
-    <span kanji="大">big</span>
-    <span kanji="古">old</span>
-    <span kanji="品">goods</span>
-    <span kanji="仁">humanity</span>
-    <span kanji="木">tree</span>
-    <span kanji="犬">dog</span>
-    <span kanji="本">book</span>
-    <span kanji="休">rest</span>
-    <span kanji="体">body</span>
-    <span kanji="林">grove</span>
-    <span kanji="森">forest</span>
-
+    <kanjilist>
+    </kanjilist>
+    <search>
+      <input type="text" placeholder="Search">
+      <div id="search-btn"></div>
+    </search>
   </sidepanel>
   <drawer><card>一</card><card>｜</card><card>丶</card><card>口</card><card>人</card></drawer>
   <board>
@@ -305,6 +323,19 @@
 // loading data assets
 const reactions = await fetch('reactions.json').then(r=>r.json());
 
+const kanjiList = await fetch('kanji.json').then(r=>r.json());
+const kanjiListL = document.querySelector("kanjilist");
+const kanjiMap = new Map();
+kanjiList.forEach(entry => {
+  const entryL = document.createElement("span");
+  entryL.textContent = entry.jisho.meanings[0];
+  entryL.setAttribute("kanji", entry.kanji);
+  kanjiListL.appendChild(entryL);
+  kanjiMap.set(entry.kanji, {});
+  kanjiMap.get(entry.kanji).L = entryL;
+});
+console.log(kanjiMap);
+
 // reactions.js
 function unwrap(radical) {
   return;
@@ -318,6 +349,7 @@ function reactionLookup(cluster) {
     return;
   } else if (typeof react === "string") {
     mergeAnimation(cluster, react);
+    kanjiMap.get(react)?.L?.classList?.add("done");
     clusters.delete(cluster);
   } else if (Array.isArray(react)) {
     // todo: non-unique reactions

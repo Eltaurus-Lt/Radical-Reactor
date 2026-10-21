@@ -1,0 +1,16 @@
+[
+  { "kanji": "二", "jisho": { "meanings": ["two"]}, "rtk_v6": {"N": "2", "meaning": "two"}},
+  { "kanji": "三", "jisho": { "meanings": ["three"]}},
+  { "kanji": "十", "jisho": { "meanings": ["ten"]}},
+  { "kanji": "大", "jisho": { "meanings": ["large", "big"]}},
+  { "kanji": "古", "jisho": { "meanings": ["old"]}},
+  { "kanji": "品", "jisho": { "meanings": ["goods", "refinement", "dignity", "article", "counter for meal courses"]}},
+  { "kanji": "仁", "jisho": { "meanings": ["humanity", "virtue", "benevolence", "charity", "man", "kernel"]}},
+  { "kanji": "木", "jisho": { "meanings": ["tree", "wood"]}},
+  { "kanji": "犬", "jisho": { "meanings": ["dog"]}},
+  { "kanji": "本", "jisho": { "meanings": ["book", "present", "main", "origin", "true", "real", "counter for long cylindrical things"]}},
+  { "kanji": "休", "jisho": { "meanings": ["rest", "day off", "retire", "sleep"]}},
+  { "kanji": "体", "jisho": { "meanings": ["body", "substance", "object", "reality", "counter for images"]}},
+  { "kanji": "林", "jisho": { "meanings": ["grove", "forest"]}},
+  { "kanji": "森", "jisho": { "meanings": ["forest", "woods"]}}
+]

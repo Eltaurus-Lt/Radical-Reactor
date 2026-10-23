@@ -439,9 +439,11 @@ document.addEventListener('mousedown', ev => {
       const boardRect = boardL.getBoundingClientRect();
       holdedCard.style.left = `${parseFloat(ev.target.style.left) + X0 + boardRect.x}px`;
       holdedCard.style.top = `${parseFloat(ev.target.style.top) + Y0 + boardRect.y}px`;
-      clusters.remove(ev.target).map(reactionLookup);
-      ev.target.remove();
-      clusters.color();
+      if (!ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+        clusters.remove(ev.target).map(reactionLookup);
+        ev.target.remove();
+        clusters.color();
+      }
     } else if (ev.target.closest("drawer")) {
       const cardRect = ev.target.getBoundingClientRect();
       holdedCard.style.left = `${cardRect.x}px`;
@@ -453,17 +455,20 @@ document.addEventListener('mousedown', ev => {
   }
 });
 
-function releaseHold() {
+function releaseHold(ev) {
   boardL.classList.remove("panning");
   if (holdedCard.classList.contains("holded")) {
     holdedCard.classList.remove("holded");
 
-    const [dx, dy] = holdedCard.style.translate.split(' ').map(parseFloat);
-    const x0 = parseFloat(holdedCard.style.left);
-    const y0 = parseFloat(holdedCard.style.top);
     const boardRect = boardL.getBoundingClientRect();
-
-    spawnCard([x0 + (dx ?? 0) - boardRect.x - X0, y0 + (dy ?? 0) - boardRect.y - Y0], holdedCard.innerHTML);
+    if (ev.clientX > boardRect.x && ev.clientY > boardRect.y) {
+      const [dx, dy] = holdedCard.style.translate.split(' ').map(parseFloat);
+      const x0 = parseFloat(holdedCard.style.left);
+      const y0 = parseFloat(holdedCard.style.top);
+      spawnCard([x0 + (dx ?? 0) - boardRect.x - X0, y0 + (dy ?? 0) - boardRect.y - Y0], holdedCard.innerHTML);
+    } else {
+      console.log("card deleted");
+    }
   }
 }
 document.addEventListener('mouseup', releaseHold);

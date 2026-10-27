@@ -48,6 +48,10 @@
     display: block;
   }
 
+  layer {
+    position: relative;
+  }
+
   html, body {
     margin: 0;
     width: 100%;
@@ -285,16 +289,59 @@
     opacity: 1;
   }
 
-  group {
-    border-color: blue;
-    position: absolute;
+  /* decorations */
 
-    height: min-content;
-    width: min-content;
-
-    outline: blue 1px solid;
-    outline-offset: 5px;
+  layer#decorationsLayer {
+    z-index: -1;
   }
+
+  layer#decorationsLayer > deco {
+    left: 0;
+    right: 0;
+    translate: -50% -50%;
+    transform: translate(var(--x), var(--y)) rotate(var(--angle));
+  }
+
+  deco {
+    display: block;
+    position: absolute;
+  }
+ 
+  deco.rock {
+    width: 70px;
+    height: 50px;
+    border-radius: 6px;
+    background-color: #2f2f2f;
+  }
+
+  deco.rock[q="1"] {background-color: lime;}
+  deco.rock[q="2"] {background-color: darkblue;}
+  deco.rock[q="3"] {background-color: crimson;}
+
+board::after,
+board::before {
+  content: '';
+  display: block;
+  position: absolute;
+}
+
+board::after {
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  left: 150px;
+  width: 200px;
+  outline: solid yellow 1px;
+}
+board::before {
+z-index: 10;
+  width: 100%;
+  left: 0;
+  right: 0;
+  top: 150px;
+  height: 200px;
+  outline: solid cyan 1px;
+}
  
   </style>
 </head>
@@ -312,7 +359,83 @@
   <board>
     <null>
       <layer id="cardsLayer"></layer>
-      <layer id="decorationsLayer"></layer>
+      <layer id="decorationsLayer">
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock" cellSize=300 q=0></deco>
+
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock" cellSize=300 q=1></deco>
+
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock" cellSize=300 q=2></deco>
+
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock" cellSize=300 q=3></deco>
+      </layer>
     </null>
     <BG>
       <null>
@@ -338,7 +461,7 @@ kanjiList.forEach(entry => {
   kanjiMap.set(entry.kanji, {});
   kanjiMap.get(entry.kanji).L = entryL;
 });
-console.log(kanjiMap);
+
 
 // reactions.js
 function unwrap(radical) {
@@ -397,7 +520,7 @@ const holdedCard = document.querySelector("body > card");
 let [X0, Y0] = [0, 0];
 
 const cardStyle = window.getComputedStyle(holdedCard);
-const { Clusters } = await import(`./clusters.js?v=${Date.now()}`);
+const { Clusters } = await import(`./classes/clusters.js?v=${Date.now()}`);
 const clusters = new Clusters([ cardStyle.width, cardStyle.height ]);
 
 function spawnCard(pos, innerHTML, animated = true) {
@@ -414,7 +537,7 @@ function spawnCard(pos, innerHTML, animated = true) {
   cardPrint.style.left = `${pos[0]}px`;
   cardPrint.style.top = `${pos[1]}px`;
 
-　nulls[1].appendChild(cardPrint);
+  nulls[1].appendChild(cardPrint);
 
   if (animated) {
     newCard.classList.add("holded");
@@ -474,6 +597,38 @@ function releaseHold(ev) {
 document.addEventListener('mouseup', releaseHold);
 document.body.addEventListener('mouseleave', releaseHold);
 
+
+// decorations
+const decoPadding = 100;
+
+function repositionDeco(deco) {
+  const cellX = Math.floor( (-X0 - deco.quadrantOffsetX + deco.cellSize) / deco.period ) * deco.period + deco.quadrantOffsetX;
+  const cellY = Math.floor( (-Y0 - deco.quadrantOffsetY + deco.cellSize) / deco.period ) * deco.period + deco.quadrantOffsetY;
+  deco.style.setProperty('--x', `${ cellX + Math.random() * deco.cellSize + decoPadding }px`);
+  deco.style.setProperty('--y', `${ cellY + Math.random() * deco.cellSize + decoPadding }px`);
+  deco.style.setProperty('--angle', `${ Math.random() * 360 }deg`);
+  deco.leftQ = cellX - deco.cellSize;
+  deco.rightQ = cellX + deco.cellSize;
+  deco.topQ = cellY - deco.cellSize;
+  deco.bottomQ = cellY + deco.cellSize;
+}
+
+const decorations = document.querySelectorAll("#decorationsLayer > *");
+
+for (let i = 0; i < decorations.length; i++) {
+  decorations[i].cellSize = parseInt(decorations[i].getAttribute("cellSize"));
+  decorations[i].period = 2 * decorations[i].cellSize; 
+  decorations[i].quadrantOffsetX = decorations[i].cellSize * (parseInt(decorations[i].getAttribute("q")) & 1);
+  decorations[i].quadrantOffsetY = decorations[i].cellSize * ((parseInt(decorations[i].getAttribute("q")) >> 1) & 1);
+  repositionDeco(decorations[i]);
+}
+
+const { DualSegTree } = await import(`./classes/DualSegTree.js?v=${Date.now()}`);
+const XTree = new DualSegTree(decorations, "leftQ", "rightQ");
+const YTree = new DualSegTree(decorations, "topQ", "bottomQ");
+
+
+// actions
 document.addEventListener('mousemove', ev => {
   if ((ev.buttons & 1) !== 1) return;
   const pos = [ev.clientX, ev.clientY];
@@ -484,9 +639,36 @@ document.addEventListener('mousemove', ev => {
   } else if (boardL.classList.contains("panning")) {
     X0 = pos[0] + boardL.pan0[0];
     Y0 = pos[1] + boardL.pan0[1];
+
     [...nulls].forEach(nullL => nullL.style.translate = `${X0}px ${Y0}px`);
     sandF.setAttribute("x", `${(X0 % 200 + 200) % 200}`); 
     sandF.setAttribute("y", `${(Y0 % 200 + 200) % 200}`); 
+
+
+    // decorations
+
+    let updateDecos = [];
+    if (ev.movementX < 0) {
+      updateDecos = XTree.query("rightQ", -X0);
+    } else if (ev.movementX > 0) {
+      updateDecos = XTree.query("leftQ", -X0);
+    }
+    updateDecos.forEach(deco => {
+      repositionDeco(deco);
+      XTree.update(deco);
+    });
+
+    updateDecos = [];
+    if (ev.movementY < 0) {
+      updateDecos = YTree.query("bottomQ", -Y0);
+    } else if (ev.movementY > 0) {
+      updateDecos = YTree.query("topQ", -Y0);
+    }
+    updateDecos.forEach(deco => {
+      repositionDeco(deco);
+      YTree.update(deco);
+    });
+
   }
 });
 

@@ -311,14 +311,17 @@
     width: 70px;
     height: 50px;
     border-radius: 6px;
-    background-color: #2f2f2f;
+    --prime-col: #2f2f2f;
+    background-color: color-mix(in lab, var(--prime-col) var(--blend, 50%), slategray);
   }
 
-  deco.rock[q="1"] {background-color: lime;}
-  deco.rock[q="2"] {background-color: darkblue;}
-  deco.rock[q="3"] {background-color: crimson;}
+  /* 
+  deco.rock[q="1"] {--prime-col: lime;}
+  deco.rock[q="2"] {--prime-col: darkblue;}
+  deco.rock[q="3"] {--prime-col: crimson;} 
+  */
 
-board::after,
+/* board::after,
 board::before {
   content: '';
   display: block;
@@ -341,7 +344,7 @@ z-index: 10;
   top: 150px;
   height: 200px;
   outline: solid cyan 1px;
-}
+} */
  
   </style>
 </head>
@@ -599,14 +602,22 @@ document.body.addEventListener('mouseleave', releaseHold);
 
 
 // decorations
+await import(`./classes/seededRandom.js?v=${Date.now()}`);
+
 const decoPadding = 100;
+
+function redrawRock(deco) {
+  deco.style.setProperty('--blend', `${ Math.random() *  50}%`);
+}
 
 function repositionDeco(deco) {
   const cellX = Math.floor( (-X0 - deco.quadrantOffsetX + deco.cellSize) / deco.period ) * deco.period + deco.quadrantOffsetX;
   const cellY = Math.floor( (-Y0 - deco.quadrantOffsetY + deco.cellSize) / deco.period ) * deco.period + deco.quadrantOffsetY;
+  Math.seedRandom(`${deco.seed}|${cellX}|${cellY}`);
   deco.style.setProperty('--x', `${ cellX + Math.random() * deco.cellSize + decoPadding }px`);
   deco.style.setProperty('--y', `${ cellY + Math.random() * deco.cellSize + decoPadding }px`);
   deco.style.setProperty('--angle', `${ Math.random() * 360 }deg`);
+  deco.redraw();
   deco.leftQ = cellX - deco.cellSize;
   deco.rightQ = cellX + deco.cellSize;
   deco.topQ = cellY - deco.cellSize;
@@ -616,11 +627,19 @@ function repositionDeco(deco) {
 const decorations = document.querySelectorAll("#decorationsLayer > *");
 
 for (let i = 0; i < decorations.length; i++) {
-  decorations[i].cellSize = parseInt(decorations[i].getAttribute("cellSize"));
-  decorations[i].period = 2 * decorations[i].cellSize; 
-  decorations[i].quadrantOffsetX = decorations[i].cellSize * (parseInt(decorations[i].getAttribute("q")) & 1);
-  decorations[i].quadrantOffsetY = decorations[i].cellSize * ((parseInt(decorations[i].getAttribute("q")) >> 1) & 1);
-  repositionDeco(decorations[i]);
+  const deco = decorations[i];
+  deco.seed = i + (deco.getAttribute("seed") ?? 0);
+  deco.cellSize = parseInt(deco.getAttribute("cellSize"));
+  deco.period = 2 * deco.cellSize; 
+  deco.quadrantOffsetX = deco.cellSize * (parseInt(deco.getAttribute("q")) & 1);
+  deco.quadrantOffsetY = deco.cellSize * ((parseInt(deco.getAttribute("q")) >> 1) & 1);
+  
+  switch (true) {
+    case deco.classList.contains("rock"):
+      deco.redraw = () => redrawRock(deco);
+      break;
+  }
+  repositionDeco(deco);
 }
 
 const { DualSegTree } = await import(`./classes/DualSegTree.js?v=${Date.now()}`);

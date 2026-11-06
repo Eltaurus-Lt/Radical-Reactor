@@ -273,28 +273,13 @@
     visibility: hidden;
   }
 
-  print {
-    width: 5rem;
-    height: 7rem;
-    position: absolute;
-
-    background: black;
-    border: white solid 9px;
-    border-radius: calc(4px + 9px);
-
-    opacity: 0;
-    transition: opacity 0.04s ease .08s;
-  }
-  print.printed {
-    opacity: 1;
-  }
-
   /* decorations */
 
   layer#decorationsLayer {
     z-index: -1;
   }
 
+  print,
   layer#decorationsLayer > deco {
     left: 0;
     right: 0;
@@ -306,7 +291,7 @@
     display: block;
     position: absolute;
   }
- 
+
   deco.rock {
     width: 70px;
     height: 50px;
@@ -320,6 +305,39 @@
   deco.rock[q="2"] {--prime-col: darkblue;}
   deco.rock[q="3"] {--prime-col: crimson;} 
   */
+
+  /* prints */
+
+  print {
+    position: absolute;
+    background: black;
+  }
+  print.deco {
+    width: 70px;
+    height: 50px;
+    
+    border-radius: 9px;
+    box-shadow: 0 0 0  9px white,
+                0 0 0 18px black,
+                0 0 0 27px white,
+                0 0 0 36px black,
+                0 0 0 45px white;
+  }
+  print.card {
+    opacity: 0;
+    transition: opacity 0.04s ease .08s;
+    
+    width: 5rem;
+    height: 7rem;
+    --angle: 0;
+    translate: 0;
+
+    border: white solid 9px;
+    border-radius: calc(4px + 9px);
+  }
+  print.printed {
+    opacity: 1;
+  }
 
 /* board::after,
 board::before {
@@ -363,81 +381,81 @@ z-index: 10;
     <null>
       <layer id="cardsLayer"></layer>
       <layer id="decorationsLayer">
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
-        <deco class="rock" cellSize=300 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0 seed="5"></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
+        <deco class="rock print" cellSize=800 q=0></deco>
 
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
-        <deco class="rock" cellSize=300 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
+        <deco class="rock print" cellSize=800 q=1></deco>
 
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
-        <deco class="rock" cellSize=300 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
+        <deco class="rock print" cellSize=800 q=2></deco>
 
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
-        <deco class="rock" cellSize=300 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
+        <deco class="rock print" cellSize=800 q=3></deco>
       </layer>
     </null>
     <BG>
@@ -526,6 +544,18 @@ const cardStyle = window.getComputedStyle(holdedCard);
 const { Clusters } = await import(`./classes/clusters.js?v=${Date.now()}`);
 const clusters = new Clusters([ cardStyle.width, cardStyle.height ]);
 
+function spawnPrint(pos = null, CSSclass = "deco") {
+  const printL = document.createElement('print');
+  if (pos) {
+    printL.style.setProperty('--x', `${pos[0]}px`);
+    printL.style.setProperty('--y', `${pos[1]}px`);
+  }
+  CSSclass.split(" ").forEach(cls => printL.classList.add(cls));
+  nulls[1].appendChild(printL);
+
+  return printL;
+}
+
 function spawnCard(pos, innerHTML, animated = true) {
   const newCard = document.createElement('card');
   newCard.innerHTML = innerHTML;
@@ -536,11 +566,7 @@ function spawnCard(pos, innerHTML, animated = true) {
   clusters.place(newCard).map(reactionLookup);
   clusters.color();
 
-  const cardPrint = document.createElement('print');
-  cardPrint.style.left = `${pos[0]}px`;
-  cardPrint.style.top = `${pos[1]}px`;
-
-  nulls[1].appendChild(cardPrint);
+  const cardPrint = spawnPrint(pos, "card");
 
   if (animated) {
     newCard.classList.add("holded");
@@ -604,7 +630,7 @@ document.body.addEventListener('mouseleave', releaseHold);
 // decorations
 await import(`./classes/seededRandom.js?v=${Date.now()}`);
 
-const decoPadding = 100;
+const decoPadding = -100;
 
 function redrawRock(deco) {
   deco.style.setProperty('--blend', `${ Math.random() *  50}%`);
@@ -614,18 +640,28 @@ function repositionDeco(deco) {
   const cellX = Math.floor( (-X0 - deco.quadrantOffsetX + deco.cellSize) / deco.period ) * deco.period + deco.quadrantOffsetX;
   const cellY = Math.floor( (-Y0 - deco.quadrantOffsetY + deco.cellSize) / deco.period ) * deco.period + deco.quadrantOffsetY;
   Math.seedRandom(`${deco.seed}|${cellX}|${cellY}`);
-  deco.style.setProperty('--x', `${ cellX + Math.random() * deco.cellSize + decoPadding }px`);
-  deco.style.setProperty('--y', `${ cellY + Math.random() * deco.cellSize + decoPadding }px`);
-  deco.style.setProperty('--angle', `${ Math.random() * 360 }deg`);
+  const xStr = `${ cellX + Math.random() * deco.cellSize + decoPadding }px`;
+  const yStr = `${ cellY + Math.random() * deco.cellSize + decoPadding }px`;
+  const aStr = `${ Math.random() * 360 }deg`;
+  deco.style.setProperty('--x', xStr);
+  deco.style.setProperty('--y', yStr);
+  deco.style.setProperty('--angle', aStr);
   deco.redraw();
   deco.leftQ = cellX - deco.cellSize;
   deco.rightQ = cellX + deco.cellSize;
   deco.topQ = cellY - deco.cellSize;
   deco.bottomQ = cellY + deco.cellSize;
+
+  if (deco.print) {
+    deco.print.style.setProperty('--x', xStr);
+    deco.print.style.setProperty('--y', yStr);
+    deco.print.style.setProperty('--angle', aStr);
+  }
 }
 
 const decorations = document.querySelectorAll("#decorationsLayer > *");
 
+/* initializing decos */
 for (let i = 0; i < decorations.length; i++) {
   const deco = decorations[i];
   deco.seed = i + (deco.getAttribute("seed") ?? 0);
@@ -637,6 +673,7 @@ for (let i = 0; i < decorations.length; i++) {
   switch (true) {
     case deco.classList.contains("rock"):
       deco.redraw = () => redrawRock(deco);
+      deco.print = spawnPrint();
       break;
   }
   repositionDeco(deco);

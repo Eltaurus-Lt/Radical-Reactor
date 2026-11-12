@@ -41,13 +41,14 @@
       <feColorMatrix in="bump" type="luminanceToAlpha" result="height"/>
 
       <feDiffuseLighting in="height" surfaceScale="8" diffuseConstant="1" lighting-color="white" result="light">
-        <fePointLight x="100" y="50" z="80" />
+        <fePointLight x="250" y="250" z="400" />
         <feDistantLight azimuth="45" elevation="60" />
       </feDiffuseLighting>
 
       <feBlend in="light" in2="displacedGrain" mode="soft-light"/>
 
     </filter>
+
   </svg>
 
   <style>
@@ -321,6 +322,14 @@
   deco.rock[q="3"] {--prime-col: crimson;} 
   */
 
+  deco.pond {
+    width: 420px;
+    height: 420px;
+    background-color: #87cefac0;
+    mask-image: var(--mask);
+    filter: blur(10px);
+  }
+
   /* prints */
 
   print {
@@ -471,6 +480,8 @@ z-index: 10;
         <deco class="rock print" cellSize=800 q=3></deco>
         <deco class="rock print" cellSize=800 q=3></deco>
         <deco class="rock print" cellSize=800 q=3></deco>
+
+        <deco class="pond print" cellSize=800 q=0 seed="a4"></deco>
       </layer>
     </null>
     <BG>
@@ -650,6 +661,25 @@ const decoPadding = -100;
 function redrawRock(deco) {
   deco.style.setProperty('--blend', `${ Math.random() *  50}%`);
 }
+function redrawPond(deco) {
+  const Npoints = 9;
+  const roughness = 10 + 20 * Math.random();
+  const contourPoints = Array.from({ length: Npoints }, (_, i) => i * 2 * Math.PI / Npoints)
+    .map(angle => {
+      const r = 50 - roughness * Math.random();
+      return [ 50 + r*Math.cos(angle), 50 + r*Math.sin(angle) ];
+    });
+  let d = `M${ 0.5*(contourPoints[0][0] + contourPoints.at(-1)[0]) } ${ 0.5*(contourPoints[0][1] + contourPoints.at(-1)[1]) }`;
+  contourPoints.forEach((pt, i) => {
+    const nxt = contourPoints[(i + 1) % Npoints];
+    const m = [ .5*(pt[0] + nxt[0]), .5*(pt[1] + nxt[1]) ];
+    d += `Q ${pt[0]} ${pt[1]} ${m[0]} ${m[1]}`;
+  });
+  d += "Z";
+  deco.style.setProperty('--mask', `url("data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="white" d="${d}" /></svg>`
+  )}")`);
+}
 
 function repositionDeco(deco) {
   const cellX = Math.floor( (-X0 - deco.quadrantOffsetX + deco.cellSize) / deco.period ) * deco.period + deco.quadrantOffsetX;
@@ -690,6 +720,11 @@ for (let i = 0; i < decorations.length; i++) {
       deco.redraw = () => redrawRock(deco);
       deco.print = spawnPrint();
       break;
+    case deco.classList.contains("pond"):
+      deco.redraw = () => redrawPond(deco);
+      break;
+    default:
+      deco.redraw = () => {};
   }
   repositionDeco(deco);
 }
